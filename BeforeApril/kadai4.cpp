@@ -84,6 +84,8 @@ public:
 }; // クラス定義の最後はセミコロンをつける
 
 int main() {
+    // "ec:1.2.3.4<タブ>bra bra bra..."
+    // みたいなフォーマットのファイルを用意して同じ場所に置いておく
     std::ifstream ifs("enzyme_randomized.list");
     std::vector<EnzymeData> enzymeArray;
     std::string buf;

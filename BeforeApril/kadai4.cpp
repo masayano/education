@@ -39,11 +39,11 @@ public:
     std::string print() const {
         std::stringstream ss("");
         ss << "ec:";
-        for(int i = 0; i < num.size(); ++i) {
+        const int length = num.size()
+        const int last   = length - 1;
+        for(int i = 0; i < length; ++i) {
             ss << num[i];
-            if(i != (num.size() - 1)) {
-                ss << ".";
-            }
+            if(i != last { ss << "."; }
         }
         ss << "\t";
         ss << data;
@@ -56,29 +56,36 @@ public:
     // つまり ソート可能 になる
     bool operator<(const EnzymeData& e) const {
         const std::vector<int>& n = e.getNum();
-        if     (num[0] <  n[0]) { return true; } 
-        else if(num[0] == n[0]) {
-            if     (num[1] <  n[1]) { return true; }
-            else if(num[1] == n[1]) {
-                if     (num[2] <  n[2]) { return true; }
-                else if(num[2] == n[2]) {
-                    if(num[3] < n[3]) { return true; } } } }
+        const int length = num.size();
+        for(int i = 0; i < length; ++i) {
+            const int lValue = num[i];
+            const int rValue = n[i];
+            if     (lValue < rValue) { return true; }
+            else if(lValue > rValue) { break; }
+        }
         return false;
     }
     bool operator>(const EnzymeData& e) const {
         const std::vector<int>& n = e.getNum();
-        if     (num[0] >  n[0]) { return true; } 
-        else if(num[0] == n[0]) {
-            if     (num[1] >  n[1]) { return true; }
-            else if(num[1] == n[1]) {
-                if     (num[2] >  n[2]) { return true; }
-                else if(num[2] == n[2]) {
-                    if(num[3] > n[3]) { return true; } } } }
+        const int length = num.size();
+        for(int i = 0; i < length; ++i) {
+            const int lValue = num[i];
+            const int rValue = n[i];
+            if     (lValue > rValue) { return true; }
+            else if(lValue < rValue) { break; }
+        }
         return false;
     }
     bool operator==(const EnzymeData& e) const {
         const std::vector<int>& n = e.getNum();
-        if((num[0]==n[0])&&(num[1]==n[1])&&(num[2]==n[2])&&(num[3]==n[3])) { return true; }
+        const int length = num.size();
+        const int last   = length - 1;
+        for(int i = 0; i < length; ++i) {
+            const int lValue = num[i];
+            const int rValue = n[i];
+            if(lValue != rValue) { break; }
+            if(i == last) { return true; }
+        }
         return false;
     }
 }; // クラス定義の最後はセミコロンをつける

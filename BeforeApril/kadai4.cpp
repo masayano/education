@@ -1,8 +1,9 @@
-// 課題4: 添付のファイルはKEGG DBに登録されているEnzymeのリスト（をランダムにシャッフルしたもの）である。このリストを、EC番号順にソートせよ。
+// 課題4: 添付のファイルはKEGG DBに登録されているEnzymeのリスト（をランダムにシャッフルしたもの）である。
+//        このリストを、EC番号順にソートせよ。
 
-#include <algorithm> // std::sortなどの様々な関数を使用可能にする
+#include <algorithm>
 #include <fstream>
-#include <sstream>   // 文字をベタベタつなげるときは stringstream がよい
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -29,7 +30,6 @@ public:
             tokenizer tok2(numString, sep2);
             for (tokenizer::iterator it2 = tok2.begin(); it2 != tok2.end(); ++it2) {
                 // std::cout << ecString << " > " << (*it2).size() << std::endl;
-                // デバッグに使ったコードはできるだけ残しておく
                 num.push_back(boost::lexical_cast<int>(*it2));
             }
         } catch(boost::bad_lexical_cast) {

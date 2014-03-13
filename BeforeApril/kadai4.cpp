@@ -39,11 +39,11 @@ public:
     std::string print() const {
         std::stringstream ss("");
         ss << "ec:";
-        const int length = num.size()
+        const int length = num.size();
         const int last   = length - 1;
         for(int i = 0; i < length; ++i) {
             ss << num[i];
-            if(i != last { ss << "."; }
+            if(i != last) { ss << "."; }
         }
         ss << "\t";
         ss << data;

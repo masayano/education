@@ -1,3 +1,5 @@
+// 課題1: 以下のURLからgenbank形式のファイルをダウンロードして、含まれる遺伝子数と遺伝子コード領域の総塩基数をカウントせよ。
+
 #include <fstream>  // ファイル入出力 std::ifstream, std::ofstream を使えるようにする
 #include <iostream> // 標準入出力     std::cout,     std::cin      を使えるようにする
 #include <string>   // 文字列クラス   std::string                  を使えるようにする

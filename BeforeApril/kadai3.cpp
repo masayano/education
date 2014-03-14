@@ -35,9 +35,9 @@ std::map<std::string, std::string> readRestrictionEnzymeData(const char* fileNam
         char_separator sep("\t", "", boost::keep_empty_tokens);
         tokenizer tok(buf, sep);
         tokenizer::iterator it = tok.begin();
-        const std::string enzymeName   = *it;
+        const std::string& enzymeName   = *it;
         ++it;
-        const std::string recognizeSeq = *it;
+        const std::string& recognizeSeq = *it;
         // std::map への要素の追加は insert(std::make_pair(key, val)) で行う
         restrictionEnzymeMap.insert(std::make_pair(enzymeName, recognizeSeq));
     }
@@ -200,7 +200,7 @@ std::map<std::string, std::vector<int> > getFragmentLengthArray(
     for    (std::map<std::string, std::vector<int> >::const_iterator it = cutIdxArrayMap.begin();
             it != cutIdxArrayMap.end();
             ++it) {
-        const std::string      enzymeName          = (*it).first;
+        const std::string&     enzymeName          = (*it).first;
         std::cout << "Calculating fragment length of enzyme \"" << enzymeName << "\"...";
         const std::vector<int> fragmentLengthArray = getFragmentLengthArray(seqLength, (*it).second);
         std::cout << "finished." << std::endl;
@@ -213,9 +213,9 @@ void printFragmentLengthArray(const std::map<std::string, std::vector<int> >& fr
     for    (std::map<std::string, std::vector<int> >::const_iterator it = fragmentLengthArrayMap.begin();
             it != fragmentLengthArrayMap.end();
             ++it) {
-        const std::string      enzymeName          = (*it).first;
+        const std::string&      enzymeName          = (*it).first;
         std::cout << "Printing fragment length of enzyme \"" << enzymeName << "\":" << std::endl;
-        const std::vector<int> fragmentLengthArray = (*it).second;
+        const std::vector<int>& fragmentLengthArray = (*it).second;
         const int fragmentTypeNum = fragmentLengthArray.size();
         const int max             = fragmentTypeNum - 1;
         for(int i = 0; i < fragmentTypeNum; ++i) {

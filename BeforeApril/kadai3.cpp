@@ -83,6 +83,25 @@ std::map<std::string, std::vector<int> > restrictSequence(
     return restrictedIdxMap;
 }
 
+void printRestrictedIdxArray(const std::vector<int>& cutIdxArray) {
+    for    (std::vector<int>::const_iterator it = cutIdxArray.begin();
+            it != cutIdxArray.end();
+            ++it) {
+        std::cout << (*it) << " ";
+    }
+    std::cout << std::endl;
+}
+
+void printRestrictedIdxMap(const std::map<std::string, std::vector<int> >& restrictedIdxMap) {
+    for    (std::map<std::string, std::vector<int> >::const_iterator it = restrictedIdxMap.begin();
+            it != restrictedIdxMap.end();
+            ++it) {
+        std::cout << "    " << (*it).first << ": ";
+        const std::vector<int>& cutIdxArray = (*it).second;
+        printRestrictedIdxArray(cutIdxArray);
+    }
+}
+
 std::vector<int> vectorCompaction(const std::vector<int>& in) {
     std::vector<int> tmp = in;
     std::sort(tmp.begin(), tmp.end());
@@ -240,10 +259,13 @@ int main() {
     const std::map<std::string, std::vector<int> > restrictedIdxMap
             = restrictSequence(seq, restrictionEnzymeMap);
     std::cout << "finished." << std::endl;
+    printRestrictedIdxMap(restrictedIdxMap);
 
     std::cout << "Merging restrict index...";
     const std::vector<int> cutIdxArray_merged = mergeArray(restrictedIdxMap);
     std::cout << "finished." << std::endl;
+    std::cout << "    Merged: ";
+    printRestrictedIdxArray(cutIdxArray_merged);
 
     const int seqLength = seq.size();
     const std::map<std::string, std::vector<int> > fragmentLengthArrayMap
@@ -258,7 +280,6 @@ int main() {
 
     std::cout << "Printing fragment length of all enzyme: " << std::endl;
     printFragmentLengthArray(fragmentLengthArray_merged);
-    std::cout << "finished." << std::endl;
 
     return 0;
 }

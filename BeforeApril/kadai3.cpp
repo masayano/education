@@ -44,6 +44,14 @@ std::map<std::string, std::string> readRestrictionEnzymeData(const char* fileNam
     return restrictionEnzymeMap;
 }
 
+void printRestrictEnzymeMap(const std::map<std::string, std::string>& restrictionEnzymeMap) {
+    for    (std::map<std::string, std::string>::const_iterator it = restrictionEnzymeMap.begin();
+            it != restrictionEnzymeMap.end();
+            ++it) {
+        std::cout << "    " << (*it).first << ": " << (*it).second << std::endl;
+    }
+}
+
 std::vector<int> getCutIdxArray(
         const std::string& seq,
         const std::string& query) {
@@ -218,6 +226,7 @@ int main() {
     std::cout << "Reading fasta file...";
     const std::string seq = readFasta("NC_001416.fna");
     std::cout << "finished." << std::endl;
+    std::cout << "   Sequence length: " << seq.size() << std::endl;
 
     // 実行ファイルと同じ場所にあらかじめ kadai3.dat を置いておくこと
     // kadai3 のフォーマットは "[酵素名]<タブ>[認識配列]" である
@@ -225,6 +234,7 @@ int main() {
     const std::map<std::string, std::string> restrictionEnzymeMap
             = readRestrictionEnzymeData("kadai3.dat");
     std::cout << "finished." << std::endl;
+    printRestrictEnzymeMap(restrictionEnzymeMap);
 
     std::cout << "Calculating restrict index...";
     const std::map<std::string, std::vector<int> > restrictedIdxMap
@@ -248,6 +258,7 @@ int main() {
 
     std::cout << "Printing fragment length of all enzyme: " << std::endl;
     printFragmentLengthArray(fragmentLengthArray_merged);
+    std::cout << "finished." << std::endl;
 
     return 0;
 }

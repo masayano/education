@@ -13,6 +13,8 @@
 
 #include <boost/tokenizer.hpp>
 
+const char* indent = "    ";
+
 std::string readFasta(const char* fileName) {
     std::ifstream ifs(fileName); 
     std::stringstream seqStream("");
@@ -48,7 +50,7 @@ void printRestrictEnzymeMap(const std::map<std::string, std::string>& restrictio
     for    (std::map<std::string, std::string>::const_iterator it = restrictionEnzymeMap.begin();
             it != restrictionEnzymeMap.end();
             ++it) {
-        std::cout << "    " << (*it).first << ": " << (*it).second << std::endl;
+        std::cout << indent << (*it).first << ": " << (*it).second << std::endl;
     }
 }
 
@@ -96,7 +98,7 @@ void printRestrictedIdxMap(const std::map<std::string, std::vector<int> >& restr
     for    (std::map<std::string, std::vector<int> >::const_iterator it = restrictedIdxMap.begin();
             it != restrictedIdxMap.end();
             ++it) {
-        std::cout << "    " << (*it).first << ": ";
+        std::cout << indent << (*it).first << ": ";
         const std::vector<int>& cutIdxArray = (*it).second;
         printRestrictedIdxArray(cutIdxArray);
     }
@@ -218,6 +220,7 @@ void printFragmentLengthArray(const std::map<std::string, std::vector<int> >& fr
         const std::vector<int>& fragmentLengthArray = (*it).second;
         const int fragmentTypeNum = fragmentLengthArray.size();
         const int max             = fragmentTypeNum - 1;
+        std::cout << indent;
         for(int i = 0; i < fragmentTypeNum; ++i) {
             std::cout << fragmentLengthArray[i];
             if(i != max) {
@@ -264,7 +267,7 @@ int main() {
     std::cout << "Merging restrict index...";
     const std::vector<int> cutIdxArray_merged = mergeArray(restrictedIdxMap);
     std::cout << "finished." << std::endl;
-    std::cout << "    Merged: ";
+    std::cout << indent << "Merged: ";
     printRestrictedIdxArray(cutIdxArray_merged);
 
     const int seqLength = seq.size();
@@ -279,6 +282,7 @@ int main() {
     printFragmentLengthArray(fragmentLengthArrayMap);
 
     std::cout << "Printing fragment length of all enzyme: " << std::endl;
+    std::cout << indent;
     printFragmentLengthArray(fragmentLengthArray_merged);
 
     return 0;

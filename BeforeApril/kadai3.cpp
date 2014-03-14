@@ -98,16 +98,72 @@ std::vector<int> mergeArray(const std::map<std::string, std::vector<int> >& arra
         //std::cout << tmp.size() << std::endl;
     }
     //std::cout << tmp.size() << std::endl;
-    std::vector<int> merged = vectorCompaction(tmp);
+    const std::vector<int> merged = vectorCompaction(tmp);
     return merged;
+}
+
+void getFragmentLengthArray(
+        const int seqLength,
+        const std::vector<int>& cutIdxArray,
+        const int index,
+        const std::vector<bool>& flagArray,
+        std::vector<int>& fragmentLengthArray) {
+    const int length = cutIdxArray.size();
+    if(index < length) {
+        std::vector<bool> flagArray_false = flagArray;
+        std::vector<bool> flagArray_true  = flagArray;
+        flagArray_false.push_back(false);
+        flagArray_true .push_back(true);
+        getFragmentLengthArray(
+                seqLength,
+                cutIdxArray,
+                index + 1,
+                flagArray_false,
+                fragmentLengthArray);
+        getFragmentLengthArray(
+                seqLength,
+                cutIdxArray,
+                index + 1,
+                flagArray_true,
+                fragmentLengthArray);
+    } else {
+        std::vector<int> tmpCutIdxArray;
+        tmpCutIdxArray.push_back(0);
+        for(int i = 0; i < length; ++i) {
+            if(flagArray[i]) {
+                //std::cout << cutIdxArray[i] << std::endl;
+                tmpCutIdxArray.push_back(cutIdxArray[i]);
+            }
+        }
+        const int fragmentNum = tmpCutIdxArray.size();
+        tmpCutIdxArray.push_back(seqLength);
+        const int edgeNum     = tmpCutIdxArray.size();
+        for(int i = 1; i < fragmentNum; ++i) {
+            const int fragmentLength = tmpCutIdxArray[i] - tmpCutIdxArray[i-1];
+            fragmentLengthArray.push_back(fragmentLength);
+        }
+    }
 }
 
 std::vector<int> getFragmentLengthArray(
         const int seqLength,
         const std::vector<int>& cutIdxArray) {
-    std::vector<int> fragmentLengthArray;
-    // TODO: どう書こうここ？
-    return fragmentLengthArray;
+    std::vector<int>  tmpFragmentLengthArray;
+    std::vector<bool> flagArray;
+    getFragmentLengthArray(
+            seqLength,
+            cutIdxArray,
+            0,
+            flagArray,
+            tmpFragmentLengthArray);
+    const int length = tmpFragmentLengthArray.size();
+    //std::cout << length << std::endl;
+    if(length > 0) {
+        const std::vector<int> fragmentLengthArray = vectorCompaction(tmpFragmentLengthArray);
+        return fragmentLengthArray;
+    } else {
+        return tmpFragmentLengthArray;
+    }
 }
 
 std::map<std::string, std::vector<int> > getFragmentLengthArray(
@@ -134,16 +190,26 @@ void printFragmentLengthArray(const std::map<std::string, std::vector<int> >& fr
         std::cout << "Printing fragment length of enzyme \"" << enzymeName << "\":" << std::endl;
         const std::vector<int> fragmentLengthArray = (*it).second;
         const int fragmentTypeNum = fragmentLengthArray.size();
+        const int max             = fragmentTypeNum - 1;
         for(int i = 0; i < fragmentTypeNum; ++i) {
-            std::cout << fragmentLengthArray[i] << std::endl;
+            std::cout << fragmentLengthArray[i];
+            if(i != max) {
+                std::cout << ", ";
+            } else {
+                std::cout << std::endl;
+            }
         }
     }
 }
 
 void printFragmentLengthArray(const std::vector<int>& fragmentLengthArray_merged) {
     const int fragmentTypeNum = fragmentLengthArray_merged.size();
+    const int max             = fragmentTypeNum - 1;
     for(int i = 0; i < fragmentTypeNum; ++i) {
-        std::cout << fragmentLengthArray_merged[i] << std::endl;
+        std::cout << fragmentLengthArray_merged[i];
+        if(i != max) {
+            std::cout << ", ";
+        }
     }
 }
 

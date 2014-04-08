@@ -96,8 +96,8 @@ void printDNA(
     if(index < aminoAcidArray.size()) {        // 受け取ったアミノ酸配列の終端まで来ていない場合に文字列を伸ばす処理を実行
         const auto aa = aminoAcidArray[index]; // 文字を受け取る
         const auto& list = aminoAcid2dna[static_cast<int>(aa)]; // 候補となるコドンのリストを取得
-        for(const auto& codonArray : list) {
-            const auto newHead = head + " " + codonArray; // 見やすくするためコドン間に空白を入れておく
+        for(const auto& codon : codonArray) {
+            const auto newHead = head + " " + codon; // 見やすくするためコドン間に空白を入れておく
             // 再帰はたくさんしすぎてはいけないが
             // アミノ酸配列の長さはたかがしれているので
             // ここは簡単のためやる

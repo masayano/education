@@ -97,7 +97,7 @@ void printDNA(
         const auto aa = aminoAcidArray[index]; // 文字を受け取る
         const auto& list = aminoAcid2dna[static_cast<int>(aa)]; // 候補となるコドンのリストを取得
         for(const auto& codonArray : list) {
-            const std::string newHead = head + " " + codonArray; // 見やすくするためコドン間に空白を入れておく
+            const auto newHead = head + " " + codonArray; // 見やすくするためコドン間に空白を入れておく
             // 再帰はたくさんしすぎてはいけないが
             // アミノ酸配列の長さはたかがしれているので
             // ここは簡単のためやる

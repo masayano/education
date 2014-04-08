@@ -26,11 +26,11 @@ public:
         data = *it1;
         try {
             char_separator sep2(".", "", boost::keep_empty_tokens);
-            const std::string numString = ecString.substr(3); // ecString の 4文字目以降を見る
+            const auto numString = ecString.substr(3); // ecString の 4文字目以降を見る
             tokenizer tok2(numString, sep2);
-            for (tokenizer::iterator it2 = tok2.begin(); it2 != tok2.end(); ++it2) {
+            for (const auto& token : tok2) {
                 // std::cout << ecString << " > " << (*it2).size() << std::endl;
-                num.push_back(boost::lexical_cast<int>(*it2));
+                num.push_back(boost::lexical_cast<int>(token));
             }
         } catch(boost::bad_lexical_cast) {
             std::cout << "error at ec string: " << ecString << std::endl;
@@ -39,9 +39,9 @@ public:
     std::string print() const {
         std::stringstream ss("");
         ss << "ec:";
-        const int length = num.size();
-        const int last   = length - 1;
-        for(int i = 0; i < length; ++i) {
+        const auto length = num.size();
+        const auto last   = length - 1;
+        for(auto i = 0U; i < length; ++i) {
             ss << num[i];
             if(i != last) { ss << "."; }
         }
@@ -55,34 +55,34 @@ public:
     // "<", ">", "==" の演算子を定義することでクラス間に 大小 の概念を与えることができる
     // つまり ソート可能 になる
     bool operator<(const EnzymeData& e) const {
-        const std::vector<int>& n = e.getNum();
-        const int length = num.size();
-        for(int i = 0; i < length; ++i) {
-            const int lValue = num[i];
-            const int rValue = n[i];
+        const auto& n = e.getNum();
+        const auto length = num.size();
+        for(auto i = 0U; i < length; ++i) {
+            const auto lValue = num[i];
+            const auto rValue = n[i];
             if     (lValue < rValue) { return true; }
             else if(lValue > rValue) { break; }
         }
         return false;
     }
     bool operator>(const EnzymeData& e) const {
-        const std::vector<int>& n = e.getNum();
-        const int length = num.size();
-        for(int i = 0; i < length; ++i) {
-            const int lValue = num[i];
-            const int rValue = n[i];
+        const auto& n = e.getNum();
+        const auto length = num.size();
+        for(auto i = 0U; i < length; ++i) {
+            const auto lValue = num[i];
+            const auto rValue = n[i];
             if     (lValue > rValue) { return true; }
             else if(lValue < rValue) { break; }
         }
         return false;
     }
     bool operator==(const EnzymeData& e) const {
-        const std::vector<int>& n = e.getNum();
-        const int length = num.size();
-        const int last   = length - 1;
-        for(int i = 0; i < length; ++i) {
-            const int lValue = num[i];
-            const int rValue = n[i];
+        const auto& n = e.getNum();
+        const auto length = num.size();
+        const auto last   = length - 1;
+        for(auto i = 0U; i < length; ++i) {
+            const auto lValue = num[i];
+            const auto rValue = n[i];
             if(lValue != rValue) { break; }
             if(i == last) { return true; }
         }
@@ -102,8 +102,8 @@ int main() {
     }
     std::sort(enzymeArray.begin(), enzymeArray.end()); // ソート
     std::ofstream ofs("enzyme_randomized.list.sort");  // 書き出し先のファイルを開く
-    for(std::vector<EnzymeData>::iterator it = enzymeArray.begin(); it != enzymeArray.end(); ++it) {
-        ofs << (*it).print() << std::endl; // 書き出し
+    for(const auto& enzyme : enzymeArray) {
+        ofs << enzyme.print() << std::endl; // 書き出し
     }
     return 0;
 }

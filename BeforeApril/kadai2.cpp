@@ -10,8 +10,7 @@
 const int charVariationNum = 128;
 
 std::vector<std::vector<std::string> > makeAminoAcid2dna() {
-    std::vector<std::vector<std::string> > matrix;
-    matrix.resize(charVariationNum); // 配列の1次元目の要素数を設定
+    std::vector<std::vector<std::string> > matrix(charVariationNum); // 配列の1次元目の要素数を設定
 
     matrix[static_cast<int>('K')].push_back("AAA");
     matrix[static_cast<int>('N')].push_back("AAC");
@@ -92,13 +91,13 @@ std::vector<std::vector<std::string> > makeAminoAcid2dna() {
 void printDNA(
         const std::vector<std::vector<std::string> >& aminoAcid2dna, // すでに存在するクラスを関数に渡すときは
         const std::string& aminoAcidArray,                           // ポインタか参照で渡すこと
-        const int index,                                             // (時間とメモリの節約のため)
-        const std::string head) {
+        const std::size_t index,                                     // (時間とメモリの節約のため)
+        const std::string& head) {
     if(index < aminoAcidArray.size()) {        // 受け取ったアミノ酸配列の終端まで来ていない場合に文字列を伸ばす処理を実行
-        const char aa = aminoAcidArray[index]; // 文字を受け取る
-        const std::vector<std::string>& list = aminoAcid2dna[static_cast<int>(aa)]; // 候補となるコドンのリストを取得
-        for(int i = 0; i < list.size(); ++i) {
-            const std::string newHead = head + " " + list[i]; // 見やすくするためコドン間に空白を入れておく
+        const auto aa = aminoAcidArray[index]; // 文字を受け取る
+        const auto& list = aminoAcid2dna[static_cast<int>(aa)]; // 候補となるコドンのリストを取得
+        for(const auto& codonArray : list) {
+            const std::string newHead = head + " " + codonArray; // 見やすくするためコドン間に空白を入れておく
             // 再帰はたくさんしすぎてはいけないが
             // アミノ酸配列の長さはたかがしれているので
             // ここは簡単のためやる
@@ -121,14 +120,14 @@ int main() {
     // 候補のコドンリストを 文字列の配列 として返してくれる
     // 要素が 文字列 である 2次元配列 を作成
     // (本当はもっと高速な方法があるが、理解しやすいコードにするため妥協)
-    const std::vector<std::vector<std::string> > aminoAcid2dna = makeAminoAcid2dna();
+    const auto aminoAcid2dna = makeAminoAcid2dna();
 
     std::string aminoAcidArray;
     std::cout << "Please input amino acid array: ";
     std::cin >> aminoAcidArray; // ユーザーからのキー入力を記録
 
     std::string head = "";
-    printDNA(aminoAcid2dna, aminoAcidArray, 0, head);
+    printDNA(aminoAcid2dna, aminoAcidArray, 0U, head);
 
     return 0;
 }

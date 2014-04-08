@@ -26,16 +26,16 @@ int main() {
             typedef boost::tokenizer<char_separator> tokenizer; // 同上
             char_separator sep("\t", "", boost::keep_empty_tokens); // タブ文字 "\t" を区切り文字にして、空のエントリ "" も残す
             tokenizer tokens(buf, sep);                             // 区切ったら
-            for (tokenizer::iterator it = tokens.begin(); it != tokens.end(); ++it) { // 先頭から一個ずつ iterator でアクセスする
-                line.push_back(*it); // 文字列の配列に新しく文字列を追加
+            for (const auto token : tokens) { // 先頭から一個ずつ iterator でアクセスする
+                line.push_back(token);        // 文字列の配列に新しく文字列を追加
             }
-            const std::string& type = line[2]; // 場所の種別が記録されてるのは先頭から3つ目の文字列
+            const auto& type = line[2]; // 場所の種別が記録されてるのは先頭から3つ目の文字列
             if(type == "gene") {
                 ++geneNum;
             } else if(type == "CDS") {
                 try {
-                    const int start = boost::lexical_cast<int>(line[3]); // 開始位置
-                    const int end   = boost::lexical_cast<int>(line[4]); // 終了位置
+                    const auto start = boost::lexical_cast<int>(line[3]); // 開始位置
+                    const auto end   = boost::lexical_cast<int>(line[4]); // 終了位置
                     codeLength += (end - start + 1);                     // コードされている長さを加算
                 } catch(boost::bad_lexical_cast) {                 // 数値に位置が変換できなかった場合
                     std::cout << "error at: " << buf << std::endl; // どんな行でエラーがあったか報告

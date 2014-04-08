@@ -36,10 +36,10 @@ std::map<std::string, std::string> readRestrictionEnzymeData(const char* fileNam
         typedef boost::tokenizer<char_separator> tokenizer;
         char_separator sep("\t", "", boost::keep_empty_tokens);
         tokenizer tok(buf, sep);
-        tokenizer::iterator it = tok.begin();
-        const std::string& enzymeName   = *it;
+        auto it = tok.begin();
+        const auto& enzymeName   = *it;
         ++it;
-        const std::string& recognizeSeq = *it;
+        const auto& recognizeSeq = *it;
         // std::map への要素の追加は insert(std::make_pair(key, val)) で行う
         restrictionEnzymeMap.insert(std::make_pair(enzymeName, recognizeSeq));
     }
@@ -47,10 +47,8 @@ std::map<std::string, std::string> readRestrictionEnzymeData(const char* fileNam
 }
 
 void printRestrictEnzymeMap(const std::map<std::string, std::string>& restrictionEnzymeMap) {
-    for    (std::map<std::string, std::string>::const_iterator it = restrictionEnzymeMap.begin();
-            it != restrictionEnzymeMap.end();
-            ++it) {
-        std::cout << indent << (*it).first << ": " << (*it).second << std::endl;
+    for(const auto& restrictPair : restrictionEnzymeMap) {
+        std::cout << indent << restrictPair.first << ": " << restrictPair.second << std::endl;
     }
 }
 
@@ -58,8 +56,8 @@ std::vector<int> getCutIdxArray(
         const std::string& seq,
         const std::string& query) {
     std::vector<int> idxArray;
-    int idx = seq.find(query);
-    const int halfLength = query.size() / 2;
+    auto idx = seq.find(query);
+    const auto halfLength = query.size() / 2;
     while(idx != std::string::npos) {
         // デバッグに使ったコードはできるだけ残しておく
         //std::cout << idx << std::endl;
@@ -75,42 +73,36 @@ std::map<std::string, std::vector<int> > restrictSequence(
     std::map<std::string, std::vector<int> > restrictedIdxMap;
     // std::map の全要素を洗うためにはイテレータを使う
     // const 付きのクラスのイテレータは const_iterator などでなければならない
-    for    (std::map<std::string, std::string>::const_iterator it = restrictionEnzymeMap.begin();
-            it != restrictionEnzymeMap.end();
-            ++it) {
-        const std::string& enzymeName   = (*it).first;  // std::pair<key, val> を参照するときは
-        const std::string& recognizeSeq = (*it).second; // key は first, val は second メンバを参照する
+    for(const auto& restrictPair : restrictionEnzymeMap) {
+        const auto& enzymeName   = restrictPair.first;  // std::pair<key, val> を参照するときは
+        const auto& recognizeSeq = restrictPair.second; // key は first, val は second メンバを参照する
         restrictedIdxMap.insert(std::make_pair(enzymeName, getCutIdxArray(seq, recognizeSeq)));
     }
     return restrictedIdxMap;
 }
 
 void printRestrictedIdxArray(const std::vector<int>& cutIdxArray) {
-    for    (std::vector<int>::const_iterator it = cutIdxArray.begin();
-            it != cutIdxArray.end();
-            ++it) {
-        std::cout << (*it) << " ";
+    for(const auto& cutIdx : cutIdxArray) {
+        std::cout << cutIdx << " ";
     }
     std::cout << std::endl;
 }
 
 void printRestrictedIdxMap(const std::map<std::string, std::vector<int> >& restrictedIdxMap) {
-    for    (std::map<std::string, std::vector<int> >::const_iterator it = restrictedIdxMap.begin();
-            it != restrictedIdxMap.end();
-            ++it) {
-        std::cout << indent << (*it).first << ": ";
-        const std::vector<int>& cutIdxArray = (*it).second;
+    for(const auto& restrictedIdxPair : restrictedIdxMap) {
+        std::cout << indent << restrictedIdxPair.first << ": ";
+        const auto& cutIdxArray = restrictedIdxPair.second;
         printRestrictedIdxArray(cutIdxArray);
     }
 }
 
 std::vector<int> vectorCompaction(const std::vector<int>& in) {
-    std::vector<int> tmp = in;
-    std::sort(tmp.begin(), tmp.end());
-    std::vector<int>::const_iterator it = tmp.begin();
+    auto tmp = in;
+    std::sort(begin(tmp), end(tmp));
+    auto it = begin(tmp);
     std::vector<int> out;
     out.push_back(*it);
-    for(++it; it != tmp.end(); ++it) {
+    for(++it; it != end(tmp); ++it) {
         const int val = (*it);
         if(out.back() != val) { out.push_back(val); }
     }
@@ -118,16 +110,16 @@ std::vector<int> vectorCompaction(const std::vector<int>& in) {
 }
 
 std::vector<int> mergeArray(const std::map<std::string, std::vector<int> >& arrayMap) {
-    std::map<std::string, std::vector<int> >::const_iterator it = arrayMap.begin();
-    std::vector<int> tmp = (*it).second;
+    auto it = arrayMap.begin();
+    auto tmp = (*it).second;
     //std::cout << (*it).first << std::endl;
-    for(++it; it != arrayMap.end(); ++it) {
-        const std::vector<int>& newArray = (*it).second;
-        tmp.insert(tmp.end(), newArray.begin(), newArray.end());
+    for(++it; it != end(arrayMap); ++it) {
+        const auto& newArray = (*it).second;
+        tmp.insert(end(tmp), begin(newArray), end(newArray));
         //std::cout << tmp.size() << std::endl;
     }
     //std::cout << tmp.size() << std::endl;
-    const std::vector<int> merged = vectorCompaction(tmp);
+    const auto merged = vectorCompaction(tmp);
     return merged;
 }
 
@@ -139,8 +131,8 @@ void getFragmentLengthArray(
         std::vector<int>& fragmentLengthArray) {
     const int length = cutIdxArray.size();
     if(index < length) {
-        std::vector<bool> flagArray_false = flagArray;
-        std::vector<bool> flagArray_true  = flagArray;
+        auto flagArray_false = flagArray;
+        auto flagArray_true  = flagArray;
         flagArray_false.push_back(false);
         flagArray_true .push_back(true);
         getFragmentLengthArray(
@@ -164,11 +156,10 @@ void getFragmentLengthArray(
                 tmpCutIdxArray.push_back(cutIdxArray[i]);
             }
         }
-        const int fragmentNum = tmpCutIdxArray.size();
+        const auto fragmentNum = tmpCutIdxArray.size();
         tmpCutIdxArray.push_back(seqLength);
-        const int edgeNum     = tmpCutIdxArray.size();
-        for(int i = 1; i < fragmentNum; ++i) {
-            const int fragmentLength = tmpCutIdxArray[i] - tmpCutIdxArray[i-1];
+        for(auto i = 1U; i < fragmentNum; ++i) {
+            const auto fragmentLength = tmpCutIdxArray[i] - tmpCutIdxArray[i-1];
             fragmentLengthArray.push_back(fragmentLength);
         }
     }
@@ -185,10 +176,10 @@ std::vector<int> getFragmentLengthArray(
             0,
             flagArray,
             tmpFragmentLengthArray);
-    const int length = tmpFragmentLengthArray.size();
+    const auto length = tmpFragmentLengthArray.size();
     //std::cout << length << std::endl;
     if(length > 0) {
-        const std::vector<int> fragmentLengthArray = vectorCompaction(tmpFragmentLengthArray);
+        const auto fragmentLengthArray = vectorCompaction(tmpFragmentLengthArray);
         return fragmentLengthArray;
     } else {
         return tmpFragmentLengthArray;
@@ -199,12 +190,10 @@ std::map<std::string, std::vector<int> > getFragmentLengthArray(
         const int seqLength,
         const std::map<std::string, std::vector<int> >& cutIdxArrayMap) {
     std::map<std::string, std::vector<int> > fragmentLengthArrayMap;
-    for    (std::map<std::string, std::vector<int> >::const_iterator it = cutIdxArrayMap.begin();
-            it != cutIdxArrayMap.end();
-            ++it) {
-        const std::string&     enzymeName          = (*it).first;
+    for(const auto& cutIdxArrayPair : cutIdxArrayMap) {
+        const auto& enzymeName          = cutIdxArrayPair.first;
         std::cout << "Calculating fragment length of enzyme \"" << enzymeName << "\"...";
-        const std::vector<int> fragmentLengthArray = getFragmentLengthArray(seqLength, (*it).second);
+        const auto  fragmentLengthArray = getFragmentLengthArray(seqLength, cutIdxArrayPair.second);
         std::cout << "finished." << std::endl;
         fragmentLengthArrayMap.insert(std::make_pair(enzymeName, fragmentLengthArray));
     }
@@ -212,16 +201,14 @@ std::map<std::string, std::vector<int> > getFragmentLengthArray(
 }
 
 void printFragmentLengthArray(const std::map<std::string, std::vector<int> >& fragmentLengthArrayMap) {
-    for    (std::map<std::string, std::vector<int> >::const_iterator it = fragmentLengthArrayMap.begin();
-            it != fragmentLengthArrayMap.end();
-            ++it) {
-        const std::string&      enzymeName          = (*it).first;
+    for(const auto& fragmentLengthArrayPair : fragmentLengthArrayMap) {
+        const auto& enzymeName          = fragmentLengthArrayPair.first;
         std::cout << "Printing fragment length of enzyme \"" << enzymeName << "\":" << std::endl;
-        const std::vector<int>& fragmentLengthArray = (*it).second;
-        const int fragmentTypeNum = fragmentLengthArray.size();
-        const int max             = fragmentTypeNum - 1;
+        const auto& fragmentLengthArray = fragmentLengthArrayPair.second;
+        const auto fragmentTypeNum = fragmentLengthArray.size();
+        const auto max             = fragmentTypeNum - 1;
         std::cout << indent;
-        for(int i = 0; i < fragmentTypeNum; ++i) {
+        for(auto i = 0U; i < fragmentTypeNum; ++i) {
             std::cout << fragmentLengthArray[i];
             if(i != max) {
                 std::cout << ", ";
@@ -233,50 +220,47 @@ void printFragmentLengthArray(const std::map<std::string, std::vector<int> >& fr
 }
 
 void printFragmentLengthArray(const std::vector<int>& fragmentLengthArray_merged) {
-    const int fragmentTypeNum = fragmentLengthArray_merged.size();
-    const int max             = fragmentTypeNum - 1;
-    for(int i = 0; i < fragmentTypeNum; ++i) {
+    const auto fragmentTypeNum = fragmentLengthArray_merged.size();
+    const auto max             = fragmentTypeNum - 1;
+    for(auto i = 0U; i < fragmentTypeNum; ++i) {
         std::cout << fragmentLengthArray_merged[i];
         if(i != max) {
             std::cout << ", ";
         }
     }
+    std::cout << std::endl;
 }
 
 int main() {
     // 実行ファイルと同じ場所にあらかじめ NC_001416.fna を置いておくこと
     std::cout << "Reading fasta file...";
-    const std::string seq = readFasta("NC_001416.fna");
+    const auto seq = readFasta("NC_001416.fna");
     std::cout << "finished." << std::endl;
     std::cout << "   Sequence length: " << seq.size() << std::endl;
 
     // 実行ファイルと同じ場所にあらかじめ kadai3.dat を置いておくこと
     // kadai3 のフォーマットは "[酵素名]<タブ>[認識配列]" である
     std::cout << "Reading enzyme data...";
-    const std::map<std::string, std::string> restrictionEnzymeMap
-            = readRestrictionEnzymeData("kadai3.dat");
+    const auto restrictionEnzymeMap = readRestrictionEnzymeData("kadai3.dat");
     std::cout << "finished." << std::endl;
     printRestrictEnzymeMap(restrictionEnzymeMap);
 
     std::cout << "Calculating restrict index...";
-    const std::map<std::string, std::vector<int> > restrictedIdxMap
-            = restrictSequence(seq, restrictionEnzymeMap);
+    const auto restrictedIdxMap = restrictSequence(seq, restrictionEnzymeMap);
     std::cout << "finished." << std::endl;
     printRestrictedIdxMap(restrictedIdxMap);
 
     std::cout << "Merging restrict index...";
-    const std::vector<int> cutIdxArray_merged = mergeArray(restrictedIdxMap);
+    const auto cutIdxArray_merged = mergeArray(restrictedIdxMap);
     std::cout << "finished." << std::endl;
     std::cout << indent << "Merged: ";
     printRestrictedIdxArray(cutIdxArray_merged);
 
-    const int seqLength = seq.size();
-    const std::map<std::string, std::vector<int> > fragmentLengthArrayMap
-            = getFragmentLengthArray(seqLength, restrictedIdxMap);
+    const auto seqLength = seq.size();
+    const auto fragmentLengthArrayMap = getFragmentLengthArray(seqLength, restrictedIdxMap);
 
     std::cout << "Calculating fragment length of all enzyme...";
-    const std::vector<int> fragmentLengthArray_merged
-            = getFragmentLengthArray(seqLength, cutIdxArray_merged);
+    const auto fragmentLengthArray_merged = getFragmentLengthArray(seqLength, cutIdxArray_merged);
     std::cout << "finished." << std::endl;
 
     printFragmentLengthArray(fragmentLengthArrayMap);

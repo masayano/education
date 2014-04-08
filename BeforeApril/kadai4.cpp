@@ -21,7 +21,7 @@ public:
         char_separator sep1("\t", "", boost::keep_empty_tokens);
         tokenizer tok1(str, sep1);
         tokenizer::iterator it1 = tok1.begin();
-        const std::string ecString = *it1;
+        const auto ecString = *it1;
         ++it1;
         data = *it1;
         try {

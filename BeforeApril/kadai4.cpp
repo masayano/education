@@ -51,8 +51,7 @@ public:
     }
     // クラス内部のデータは関数を通じて操作する(推奨)
     const std::vector<int>& getNum () const { return num;  }
-    const std::string&      getData() const { return data; }
-    // "<", ">", "==" の演算子を定義することでクラス間に 大小 の概念を与えることができる
+    // "<" 演算子を定義することでクラス間に 大小 の概念を与えることができる
     // つまり ソート可能 になる
     bool operator<(const EnzymeData& e) const {
         const auto& n = e.getNum();
@@ -74,10 +73,10 @@ int main() {
     std::vector<EnzymeData> enzymeArray;
     std::string buf;
     while(ifs && std::getline(ifs, buf)) {
-        EnzymeData e(buf);        // 酵素データクラスの実体(インスタンス)を文字列を素に作成
-        enzymeArray.push_back(e); // 酵素データを配列に登録
+        EnzymeData e(buf);           // 酵素データクラスの実体(インスタンス)を文字列を素に作成
+        enzymeArray.emplace_back(e); // 酵素データを配列に登録
     }
-    std::sort(begin(enzymeArray), end(enzymeArray)); // ソート
+    std::sort(begin(enzymeArray), end(enzymeArray));   // ソート
     std::ofstream ofs("enzyme_randomized.list.sort");  // 書き出し先のファイルを開く
     for(const auto& enzyme : enzymeArray) {
         ofs << enzyme.print() << std::endl; // 書き出し

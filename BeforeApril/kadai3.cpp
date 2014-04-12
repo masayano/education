@@ -52,10 +52,11 @@ void printRestrictEnzymeMap(const std::map<std::string, std::string>& restrictio
     }
 }
 
-std::vector<int> getCutIdxArray(
+template <class T>
+std::vector<T> getCutIdxArray(
         const std::string& seq,
         const std::string& query) {
-    std::vector<int> idxArray;
+    std::vector<T> idxArray;
     auto idx = seq.find(query);
     const auto halfLength = query.size() / 2;
     while(idx != std::string::npos) {
@@ -67,28 +68,31 @@ std::vector<int> getCutIdxArray(
     return idxArray;
 }
 
-std::map<std::string, std::vector<int> > restrictSequence(
+template <class T>
+std::map<std::string, std::vector<T> > restrictSequence(
         const std::string& seq,
         const std::map<std::string, std::string>& restrictionEnzymeMap) {
-    std::map<std::string, std::vector<int> > restrictedIdxMap;
+    std::map<std::string, std::vector<T> > restrictedIdxMap;
     // std::map の全要素を洗うためにはイテレータを使う
     // const 付きのクラスのイテレータは const_iterator などでなければならない
     for(const auto& restrictPair : restrictionEnzymeMap) {
         const auto& enzymeName   = restrictPair.first;  // std::pair<key, val> を参照するときは
         const auto& recognizeSeq = restrictPair.second; // key は first, val は second メンバを参照する
-        restrictedIdxMap.insert(std::make_pair(enzymeName, getCutIdxArray(seq, recognizeSeq)));
+        restrictedIdxMap.insert(std::make_pair(enzymeName, getCutIdxArray<T>(seq, recognizeSeq)));
     }
     return restrictedIdxMap;
 }
 
-void printRestrictedIdxArray(const std::vector<int>& cutIdxArray) {
+template <class T>
+void printRestrictedIdxArray(const std::vector<T>& cutIdxArray) {
     for(const auto& cutIdx : cutIdxArray) {
         std::cout << cutIdx << " ";
     }
     std::cout << std::endl;
 }
 
-void printRestrictedIdxMap(const std::map<std::string, std::vector<int> >& restrictedIdxMap) {
+template <class T>
+void printRestrictedIdxMap(const std::map<std::string, std::vector<T> >& restrictedIdxMap) {
     for(const auto& restrictedIdxPair : restrictedIdxMap) {
         std::cout << indent << restrictedIdxPair.first << ": ";
         const auto& cutIdxArray = restrictedIdxPair.second;
@@ -96,40 +100,31 @@ void printRestrictedIdxMap(const std::map<std::string, std::vector<int> >& restr
     }
 }
 
-std::vector<int> vectorCompaction(const std::vector<int>& in) {
-    auto tmp = in;
-    std::sort(begin(tmp), end(tmp));
-    auto it = begin(tmp);
-    std::vector<int> out;
-    out.push_back(*it);
-    for(++it; it != end(tmp); ++it) {
-        const int val = (*it);
-        if(out.back() != val) { out.push_back(val); }
-    }
-    return out;
+template <class T>
+void vectorCompaction(std::vector<T>& vec) {
+    std::sort(begin(vec), end(vec));
+    vec.erase(std::unique(begin(vec), end(vec)), end(vec));
 }
 
-std::vector<int> mergeArray(const std::map<std::string, std::vector<int> >& arrayMap) {
-    auto it = arrayMap.begin();
-    auto tmp = (*it).second;
-    //std::cout << (*it).first << std::endl;
-    for(++it; it != end(arrayMap); ++it) {
-        const auto& newArray = (*it).second;
+template <class T, class U>
+std::vector<T> mergeArray(const std::map<U, std::vector<T> >& arrayMap) {
+    std::vector<T> tmp;
+    for(const auto& arrayPair : arrayMap) {
+        const auto& newArray = arrayPair.second;
         tmp.insert(end(tmp), begin(newArray), end(newArray));
-        //std::cout << tmp.size() << std::endl;
     }
-    //std::cout << tmp.size() << std::endl;
-    const auto merged = vectorCompaction(tmp);
-    return merged;
+    vectorCompaction(tmp);
+    return tmp;
 }
 
+template <class T>
 void getFragmentLengthArray(
-        const int seqLength,
-        const std::vector<int>& cutIdxArray,
-        const int index,
+        const T seqLength,
+        const std::vector<T>& cutIdxArray,
+        const T index,
         const std::vector<bool>& flagArray,
-        std::vector<int>& fragmentLengthArray) {
-    const int length = cutIdxArray.size();
+        std::vector<T>& fragmentLengthArray) {
+    const T length = cutIdxArray.size();
     if(index < length) {
         auto flagArray_false = flagArray;
         auto flagArray_true  = flagArray;
@@ -148,11 +143,14 @@ void getFragmentLengthArray(
                 flagArray_true,
                 fragmentLengthArray);
     } else {
-        std::vector<int> tmpCutIdxArray;
+        std::vector<T> tmpCutIdxArray;
         tmpCutIdxArray.push_back(0);
-        for(int i = 0; i < length; ++i) {
+        /*for(const auto& flg : flagArray) {
+            std::cout << flg << " ";
+        }
+        std::cout << std::endl;*/
+        for(auto i = 0U; i < length; ++i) {
             if(flagArray[i]) {
-                //std::cout << cutIdxArray[i] << std::endl;
                 tmpCutIdxArray.push_back(cutIdxArray[i]);
             }
         }
@@ -165,31 +163,32 @@ void getFragmentLengthArray(
     }
 }
 
-std::vector<int> getFragmentLengthArray(
-        const int seqLength,
-        const std::vector<int>& cutIdxArray) {
-    std::vector<int>  tmpFragmentLengthArray;
+template <class T>
+std::vector<T> getFragmentLengthArray(
+        const T seqLength,
+        const std::vector<T>& cutIdxArray) {
+    std::vector<T>  tmpFragmentLengthArray;
     std::vector<bool> flagArray;
     getFragmentLengthArray(
             seqLength,
             cutIdxArray,
-            0,
+            0UL,
             flagArray,
             tmpFragmentLengthArray);
     const auto length = tmpFragmentLengthArray.size();
-    //std::cout << length << std::endl;
-    if(length > 0) {
-        const auto fragmentLengthArray = vectorCompaction(tmpFragmentLengthArray);
-        return fragmentLengthArray;
+    if(length > 0UL) {
+        vectorCompaction(tmpFragmentLengthArray);
+        return tmpFragmentLengthArray;
     } else {
         return tmpFragmentLengthArray;
     }
 }
 
-std::map<std::string, std::vector<int> > getFragmentLengthArray(
-        const int seqLength,
-        const std::map<std::string, std::vector<int> >& cutIdxArrayMap) {
-    std::map<std::string, std::vector<int> > fragmentLengthArrayMap;
+template <class T>
+std::map<std::string, std::vector<T> > getFragmentLengthArray(
+        const T seqLength,
+        const std::map<std::string, std::vector<T> >& cutIdxArrayMap) {
+    std::map<std::string, std::vector<T> > fragmentLengthArrayMap;
     for(const auto& cutIdxArrayPair : cutIdxArrayMap) {
         const auto& enzymeName          = cutIdxArrayPair.first;
         std::cout << "Calculating fragment length of enzyme \"" << enzymeName << "\"...";
@@ -200,7 +199,8 @@ std::map<std::string, std::vector<int> > getFragmentLengthArray(
     return fragmentLengthArrayMap;
 }
 
-void printFragmentLengthArray(const std::map<std::string, std::vector<int> >& fragmentLengthArrayMap) {
+template <class T>
+void printFragmentLengthArray(const std::map<std::string, std::vector<T> >& fragmentLengthArrayMap) {
     for(const auto& fragmentLengthArrayPair : fragmentLengthArrayMap) {
         const auto& enzymeName          = fragmentLengthArrayPair.first;
         std::cout << "Printing fragment length of enzyme \"" << enzymeName << "\":" << std::endl;
@@ -219,7 +219,8 @@ void printFragmentLengthArray(const std::map<std::string, std::vector<int> >& fr
     }
 }
 
-void printFragmentLengthArray(const std::vector<int>& fragmentLengthArray_merged) {
+template <class T>
+void printFragmentLengthArray(const std::vector<T>& fragmentLengthArray_merged) {
     const auto fragmentTypeNum = fragmentLengthArray_merged.size();
     const auto max             = fragmentTypeNum - 1;
     for(auto i = 0U; i < fragmentTypeNum; ++i) {
@@ -246,7 +247,7 @@ int main() {
     printRestrictEnzymeMap(restrictionEnzymeMap);
 
     std::cout << "Calculating restrict index...";
-    const auto restrictedIdxMap = restrictSequence(seq, restrictionEnzymeMap);
+    const auto restrictedIdxMap = restrictSequence<std::size_t>(seq, restrictionEnzymeMap);
     std::cout << "finished." << std::endl;
     printRestrictedIdxMap(restrictedIdxMap);
 

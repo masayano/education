@@ -20,7 +20,7 @@ public:
         typedef boost::tokenizer<char_separator> tokenizer;
         char_separator sep1("\t", "", boost::keep_empty_tokens);
         tokenizer tok1(str, sep1);
-        tokenizer::iterator it1 = tok1.begin();
+        tokenizer::iterator it1 = begin(tok1);
         const auto ecString = *it1;
         ++it1;
         data = *it1;
@@ -65,29 +65,6 @@ public:
         }
         return false;
     }
-    bool operator>(const EnzymeData& e) const {
-        const auto& n = e.getNum();
-        const auto length = num.size();
-        for(auto i = 0U; i < length; ++i) {
-            const auto lValue = num[i];
-            const auto rValue = n[i];
-            if     (lValue > rValue) { return true; }
-            else if(lValue < rValue) { break; }
-        }
-        return false;
-    }
-    bool operator==(const EnzymeData& e) const {
-        const auto& n = e.getNum();
-        const auto length = num.size();
-        const auto last   = length - 1;
-        for(auto i = 0U; i < length; ++i) {
-            const auto lValue = num[i];
-            const auto rValue = n[i];
-            if(lValue != rValue) { break; }
-            if(i == last) { return true; }
-        }
-        return false;
-    }
 }; // クラス定義の最後はセミコロンをつける
 
 int main() {
@@ -100,7 +77,7 @@ int main() {
         EnzymeData e(buf);        // 酵素データクラスの実体(インスタンス)を文字列を素に作成
         enzymeArray.push_back(e); // 酵素データを配列に登録
     }
-    std::sort(enzymeArray.begin(), enzymeArray.end()); // ソート
+    std::sort(begin(enzymeArray), end(enzymeArray)); // ソート
     std::ofstream ofs("enzyme_randomized.list.sort");  // 書き出し先のファイルを開く
     for(const auto& enzyme : enzymeArray) {
         ofs << enzyme.print() << std::endl; // 書き出し
